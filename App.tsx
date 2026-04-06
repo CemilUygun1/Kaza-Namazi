@@ -101,6 +101,7 @@ export default function App() {
             counts={counts}
             setCounts={setCounts}
             location={location}
+            setLocation={setLocation}
             prayerTimes={prayerTimes}
             timesLoading={timesLoading}
           />

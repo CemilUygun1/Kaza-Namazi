@@ -34,9 +34,9 @@ export default function OnboardingScreen({ onComplete }: Props) {
   const [cities] = useState<City[]>(() => getCities());
   const [districts, setDistricts] = useState<District[]>(() => getDistricts('539'));
   const [selectedCityId, setSelectedCityId] = useState('539'); // İstanbul
-  const [selectedDistrictId, setSelectedDistrictId] = useState(() => {
+  const [selectedDistrictName, setSelectedDistrictName] = useState(() => {
     const d = getDistricts('539');
-    return d.length > 0 ? d[0].IlceID : '';
+    return d.length > 0 ? d[0].IlceAdi : '';
   });
 
   // manual counts
@@ -53,7 +53,7 @@ export default function OnboardingScreen({ onComplete }: Props) {
     if (selectedCityId) {
       const d = getDistricts(selectedCityId);
       setDistricts(d);
-      setSelectedDistrictId(d.length > 0 ? d[0].IlceID : '');
+      setSelectedDistrictName(d.length > 0 ? d[0].IlceAdi : '');
     }
   }, [selectedCityId]);
 
@@ -79,8 +79,7 @@ export default function OnboardingScreen({ onComplete }: Props) {
   };
 
   const handleFinish = (counts: Counts) => {
-    const city = cities.find((c) => c.SehirID === selectedCityId);
-    const district = districts.find((d) => d.IlceID === selectedDistrictId);
+    const district = districts.find((d) => d.IlceAdi === selectedDistrictName);
     const cityNameEn = getCityNameEn(selectedCityId);
     const profile: UserProfile = {
       gender,
@@ -94,7 +93,7 @@ export default function OnboardingScreen({ onComplete }: Props) {
     const location: LocationData = {
       cityId: selectedCityId,
       cityName: cityNameEn,
-      districtId: selectedDistrictId,
+      districtId: district?.IlceID || '',
       districtName: district?.IlceAdi || '',
     };
     onComplete(profile, counts, location);
@@ -235,15 +234,15 @@ export default function OnboardingScreen({ onComplete }: Props) {
             <Text style={s.noData}>İlçe bulunamadı</Text>
           ) : (
             <Picker
-              selectedValue={selectedDistrictId}
-              onValueChange={(v) => setSelectedDistrictId(String(v))}
+              selectedValue={selectedDistrictName}
+              onValueChange={(v) => setSelectedDistrictName(String(v))}
               style={s.picker}
             >
-              {districts.map((d) => (
+              {districts.map((d, i) => (
                 <Picker.Item
-                  key={d.IlceID}
+                  key={`${d.IlceID}_${i}`}
                   label={d.IlceAdi}
-                  value={d.IlceID}
+                  value={d.IlceAdi}
                 />
               ))}
             </Picker>
